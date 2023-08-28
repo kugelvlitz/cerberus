@@ -1,0 +1,43 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          ImageServer
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: ImageServer Service
+### END INIT INFO
+
+DESC="ImageServer"
+DAEMON=/home/garza/Tarea2SO/server
+PIDFILE=/var/run/ImageServer.pid
+PORT=1717
+
+case "$1" in
+    start)
+        echo "Starting $DESC..."
+        $DAEMON --port $PORT &  # Inicia el proceso en segundo plano
+        echo $! > $PIDFILE
+	echo "done"
+        ;;
+    stop)
+        echo "Stopping $DESC..."
+        kill $(cat $PIDFILE)
+        rm -f $PIDFILE
+	echo "done"
+        ;;
+    restart)
+	echo "Restarging $DESC..."
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
+
