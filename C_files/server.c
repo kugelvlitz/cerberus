@@ -31,6 +31,78 @@
 // sudo cp stb/stb_image_write.h /usr/local/include/
 
 
+void clasify_image(unsigned char *image_name, int connfd){
+
+	char buff[MAX];
+	bzero(buff, MAX);
+	int width, height, channels;
+    unsigned char *image = stbi_load(image_name, &width, &height, &channels, 0);
+
+    if (image == NULL) {
+        strncpy(buff, "Error loading image \n", sizeof(buff) - 1); 
+		write(connfd, buff, sizeof(buff));
+    }
+
+    int redCount = 0;
+    int greenCount = 0;
+    int blueCount = 0;
+
+    // Analize image pixel's
+    for (int i = 0; i < width * height * channels; i += channels) {
+        unsigned char red = image[i];
+        unsigned char green = image[i + 1];
+        unsigned char blue = image[i + 2];
+
+        redCount += red;
+        greenCount += green;
+        blueCount += blue;
+    }
+
+    stbi_image_free(image);
+
+    // Clasifify
+    if (redCount > greenCount && redCount > blueCount) {
+		char folder_name[100] = "Images_t2so/rojo/";
+		strcat(folder_name,image_name);
+		if(!stbi_write_png(folder_name, width, height, channels, image, width * channels)){
+			printf("Error saving the image.\n");
+			strncpy(buff, "Error saving the image.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}else{
+			printf("Predominant color : RED.\n");
+			strncpy(buff, "Predominant color : RED.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}
+        
+    } else if (greenCount > redCount && greenCount > blueCount) {
+		char folder_name[100] = "Images_t2so/verde/";
+		strcat(folder_name,image_name);
+		if(!stbi_write_png(folder_name, width, height, channels, image, width * channels)){
+			printf("Error saving the image.\n");
+			strncpy(buff, "Error saving the image.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}else{
+			printf("Predominant color : GREEN.\n");
+			strncpy(buff, "Predominant color : RED.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}
+
+    } else {
+		char folder_name[100] = "Images_t2so/azul/";
+		strcat(folder_name,image_name);
+		if(!stbi_write_png(folder_name, width, height, channels, image, width * channels)){
+			printf("Error saving the image.\n");
+			strncpy(buff, "Error saving the image.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}else{
+			printf("Predominant color : BLUE.\n");
+			strncpy(buff, "Predominant color : BLUE.\n", sizeof(buff) - 1); 
+			write(connfd, buff, sizeof(buff));
+		}
+        
+    }
+}
+
 void histogram_equalization(unsigned char *image, int width, int height) {
     // Calculate first histogram
     int histogram[256] = {0};
@@ -51,12 +123,16 @@ void histogram_equalization(unsigned char *image, int width, int height) {
     }
 }
 
-void EcualizeImage(char* imagePath){
+void ecualizeImage(char* imagePath, int connfd){
+	char buff[MAX];
+	bzero(buff, MAX);
     int width, height, channels;
     unsigned char *image = stbi_load(imagePath, &width, &height, &channels, 0);
 
     if (image == NULL) {
-        printf("Error al cargar la imagen.\n");
+
+		strncpy(buff, "Error loading image \n", sizeof(buff) - 1); 
+		write(connfd, buff, sizeof(buff));
        
     }
 
@@ -64,12 +140,18 @@ void EcualizeImage(char* imagePath){
     histogram_equalization(image, width, height);
     // Guarda la imagen resultante
     if (!stbi_write_png("Images_t2so/filtered/output_filtered.jpg", width, height, channels, image, width * channels)) {
-        printf("Error al guardar la imagen de salida.\n");
+
+		strncpy(buff, "Error saving the output image \n", sizeof(buff) - 1); 
+		write(connfd, buff, sizeof(buff));
+    
         
     }
 
     // Limpia la memoria
     stbi_image_free(image);
+
+	strncpy(buff, "Image processed with succes! \n", sizeof(buff) - 1); 
+	write(connfd, buff, sizeof(buff));
 }
 
 
@@ -91,7 +173,7 @@ void func(int connfd)
 		
 
 		// Functions calls
-		if(strncmp(buff,"eqimage", 9) == 0){
+		if(strncmp(buff,"eqimage", 7) == 0){
 			bzero(buff, MAX);
 			n = 0;
 			strncpy(buff, "¿Whats the file name? \n", sizeof(buff) - 1); 
@@ -110,16 +192,22 @@ void func(int connfd)
 					
 					buff[strlen(buff) - 1] = '\0';
 					printf("Is image: %s\n", buff);
-					EcualizeImage(buff);
-
+					ecualizeImage(buff, connfd);
+					clasify_image(buff,connfd);
 					break;
 				}
 				
 				else if((strncmp(buff,"\n",1)==0)){
+					bzero(buff, MAX);
 					printf("Invalid Input\n");
+					strncpy(buff, "Invalid Input \n", sizeof(buff) - 1); 
+					write(connfd, buff, sizeof(buff));
 					break;
 				}else{
+					bzero(buff, MAX);
 					printf("Invalid Input\n");
+					strncpy(buff, "Invalid Input \n", sizeof(buff) - 1); 
+					write(connfd, buff, sizeof(buff));
 					break;
 					
 				}

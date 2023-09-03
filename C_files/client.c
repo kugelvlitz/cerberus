@@ -29,8 +29,13 @@ void func(int sockfd)
 			printf("File name: ");
 			n=0;
 			while ((buff[n++] = getchar()) != '\n');
-			printf("You write: %s",buff);
 			write(sockfd, buff, sizeof(buff));
+			bzero(buff, sizeof(buff));
+			read(sockfd, buff, sizeof(buff));
+			printf("From Server : %s\n", buff);
+			bzero(buff, sizeof(buff));
+			read(sockfd, buff, sizeof(buff));
+			printf("From Server : %s\n", buff);
 		}
 
 		if ((strncmp(buff, "exit", 4)) == 0) {
