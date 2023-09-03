@@ -13,16 +13,26 @@ void func(int sockfd)
 {
 	char buff[MAX];
 	int n;
+	
 	for (;;) {
 		bzero(buff, sizeof(buff));
 		printf("Enter the string : ");
 		n = 0;
-		while ((buff[n++] = getchar()) != '\n')
-			;
+		while ((buff[n++] = getchar()) != '\n');
 		write(sockfd, buff, sizeof(buff));
 		bzero(buff, sizeof(buff));
 		read(sockfd, buff, sizeof(buff));
-		printf("From Server : %s", buff);
+		printf("From Server : %s\n", buff);
+
+		if((strncmp(buff, "¿Whats the file name? \n", 23)) == 0){
+			bzero(buff, sizeof(buff));
+			printf("File name: ");
+			n=0;
+			while ((buff[n++] = getchar()) != '\n');
+			printf("You write: %s",buff);
+			write(sockfd, buff, sizeof(buff));
+		}
+
 		if ((strncmp(buff, "exit", 4)) == 0) {
 			printf("Client Exit...\n");
 			break;
