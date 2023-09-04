@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I
+CFLAGS=-I.
 DEPS = client.h
 OBJ = client.o
 
