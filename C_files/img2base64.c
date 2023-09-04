@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 
+
 // Function to encode binary data to Base64
 static const char base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 char* base64_encode(const uint8_t* data, size_t input_length) {
@@ -36,6 +37,7 @@ char* base64_encode(const uint8_t* data, size_t input_length) {
 }
 
 char* encode(char path[]) {
+    
     // Open the image file
     FILE* image_file = fopen(path, "rb");
     if (!image_file) {
@@ -146,9 +148,4 @@ int decode(char* base64_data) {
 
     printf("Decoded image saved as 'decoded_image.jpg'\n");
   
-}
-
-void main() {
-    char* result = encode("yo.jpg");
-    decode(result);
 }

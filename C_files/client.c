@@ -6,6 +6,8 @@
 #include <strings.h> // bzero()
 #include <sys/socket.h>
 #include <unistd.h> // read(), write(), close()
+#include "img2base64.c"
+
 #define MAX 8000
 #define PORT 1717
 #define SA struct sockaddr
@@ -29,7 +31,8 @@ void func(int sockfd)
 			printf("File name: ");
 			n=0;
 			while ((buff[n++] = getchar()) != '\n');
-			write(sockfd, buff, sizeof(buff));
+			char * base64_message = encode(buff);
+			write(sockfd, base64_message, sizeof(base64_message));
 			bzero(buff, sizeof(buff));
 			read(sockfd, buff, sizeof(buff));
 			printf("From Server : %s\n", buff);

@@ -17,7 +17,7 @@
 #include <unistd.h> // read(), write(), close()
 #include "jpeglib.h"
 #include <png.h>
-
+#include "img2base64.c"
 
 
 #define MAX 8000
@@ -188,30 +188,21 @@ void func(int connfd)
 				read(connfd, buff, sizeof(buff));
 				lng = strlen(buff);
 
-				if(strstr(buff, ".png") != NULL || strstr(buff, ".jpg") != NULL || strstr(buff, ".PNG") != NULL || strstr(buff, ".JPG") != NULL){
-					
-					buff[strlen(buff) - 1] = '\0';
-					printf("Is image: %s\n", buff);
-					ecualizeImage(buff, connfd);
-					clasify_image(buff,connfd);
-					break;
-				}
-				
-				else if((strncmp(buff,"\n",1)==0)){
+				if((strncmp(buff,"\n",1)==0)){
 					bzero(buff, MAX);
 					printf("Invalid Input\n");
 					strncpy(buff, "Invalid Input \n", sizeof(buff) - 1); 
 					write(connfd, buff, sizeof(buff));
 					break;
-				}else{
-					bzero(buff, MAX);
-					printf("Invalid Input\n");
-					strncpy(buff, "Invalid Input \n", sizeof(buff) - 1); 
-					write(connfd, buff, sizeof(buff));
-					break;
-					
 				}
-				
+
+				buff[strlen(buff) - 1] = '\0';
+				printf("Is image: %s\n", buff);
+				decode(buff);
+				ecualizeImage("decoded_image.jpg", connfd);
+				clasify_image("decoded_image.jpg",connfd);
+				break;
+
 			}
 
 
