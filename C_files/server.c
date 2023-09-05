@@ -15,8 +15,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h> // read(), write(), close()
-#include "jpeglib.h"
-#include <png.h>
+
 #include "img2base64.c"
 
 
@@ -83,7 +82,7 @@ void clasify_image(unsigned char *image_name, int connfd){
 			write(connfd, buff, sizeof(buff));
 		}else{
 			printf("Predominant color : GREEN.\n");
-			strncpy(buff, "Predominant color : RED.\n", sizeof(buff) - 1); 
+			strncpy(buff, "Predominant color : GREEN.\n", sizeof(buff) - 1); 
 			write(connfd, buff, sizeof(buff));
 		}
 
@@ -198,9 +197,11 @@ void func(int connfd)
 
 				buff[strlen(buff) - 1] = '\0';
 				printf("Is image: %s\n", buff);
-				decode(buff);
-				ecualizeImage("decoded_image.jpg", connfd);
-				clasify_image("decoded_image.jpg",connfd);
+				//decode(buff);
+				//ecualizeImage("decoded_image.jpg", connfd);
+				//clasify_image("decoded_image.jpg",connfd);
+				ecualizeImage(buff, connfd);
+				clasify_image(buff,connfd);
 				break;
 
 			}

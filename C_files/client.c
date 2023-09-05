@@ -31,8 +31,12 @@ void func(int sockfd)
 			printf("File name: ");
 			n=0;
 			while ((buff[n++] = getchar()) != '\n');
-			char * base64_message = encode(buff);
-			write(sockfd, base64_message, sizeof(base64_message));
+			//buff[strlen(buff) - 1] = '\0';
+			//char * base64_message[MAX] = encode(buff);
+			write(sockfd, buff, sizeof(buff));
+
+			
+
 			bzero(buff, sizeof(buff));
 			read(sockfd, buff, sizeof(buff));
 			printf("From Server : %s\n", buff);
